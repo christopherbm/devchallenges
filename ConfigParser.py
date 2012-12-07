@@ -49,24 +49,18 @@ class ConfigParser:
 				if line.isspace(): continue
 				
 				# line is a section header
-				elif line[0] == self.sectionContainer[0]:
-					print 'section--> ', line
-					
+				elif line[0] == self.sectionContainer[0]:					
 					if( self.isSection(line) != True ):
 						raise Exception('invalid section name: {0}'.format(line))
 			
 				# line is part of a long string
 				elif line[0] == " ":
-					print 'extra line--> ', line
-				
-					#self.addToLastDatum(line)
+					self.addToLastDatum(line)
 			
 				# line is a key/value pair
-				elif type(line[0]) is str:
-					print 'key -->', line
-					
-					#if( self.isKey(line) != True ):
-					#	raise Exception('invalid key name: {0}'.format(line))
+				elif type(line[0]) is str:					
+					if( self.isKey(line) != True ):
+						raise Exception('invalid key name: {0}'.format(line))
 					
 				# skip line, but do not raise error
 				else: continue
@@ -84,7 +78,6 @@ class ConfigParser:
 		# validate section
 		if( self.isAllowableSection(section) ):
 			self.config.append( [section, []] )			
-			#self.config.update( {section:{}} )
 			return True
 		
 		return False
@@ -99,26 +92,17 @@ class ConfigParser:
 		value = self.returnAsType(value)
 		
 		# add to last item in config
-		keys = self.config.keys()
+		#keys = self.config.keys()
 		if( self.isAllowableKey(key) ):
-			lastKey = keys[-1]
-			self.config[lastKey].update({key:value})
+			self.config[-1][1].append([key, value])
 			return True
 			
 		return False
 			
 	def addToLastDatum(self, line):
-		# get last section
-		keys = self.config.keys()
-		lastSection = keys[-1]
-		
-		# get last key of last section
-		sectionKeys = self.config[lastSection].keys()
-		lastKey = sectionKeys[-1]
-		
 		# strip line and concatenate with last value
-		self.config[lastSection][lastKey] += ' '
-		self.config[lastSection][lastKey] += line.strip()
+		self.config[-1][-1][-1][-1] += ' '
+		self.config[-1][-1][-1][-1] += line.strip()
 	
 	# checks if value contains characters or space (except for '.')
 	def returnAsType(self, value):
